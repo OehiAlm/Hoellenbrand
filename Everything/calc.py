@@ -2,7 +2,7 @@ operator_tuple = ("+", "-", "*", "/")
 num1 = int()
 num2 = int()
 oper1 = str()
-repeat = False
+repeat = True
 
 def read_first_input():
     global num1
@@ -65,9 +65,7 @@ def repeating():
         print("What did you just say to me?")
         repeating()
 
-read()
-repeating()
-if repeat:
+while repeat:
     read()
     repeating()
 
