@@ -7,20 +7,27 @@ repeat = True
 def read_first_input():
     global num1
     num1 = input("Enter first number: ")
-    if not num1.isalnum():
-        print("Not a valid number")
+    try:
+        num1 = int(num1)
+    except:
+        print("Not a valid number. Try again please")
         read_first_input()
 
 def read_second_input():
     global num2
     num2 = input("Enter second number: ")
-    if not num2.isalnum():
-        print("Not a valid number")
+    try:
+        num2 = int(num2)
+    except:
+        print("Not a valid number. Try again please")
         read_second_input()
 
 def read_operator():
     global oper1
     oper1 = input("Enter operator: ")
+    if not len(oper1) == 1:
+        print("Please specify not {}, but only one operator! Valid operators are + - * /".format(len(oper1)))
+        read_operator()
     if any((operator in operator_tuple for operator in oper1)):
         str(oper1)
     else:
