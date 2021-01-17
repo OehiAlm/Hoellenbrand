@@ -85,17 +85,17 @@ def Uniqueness_Check (integer):
     unique = False
     zahl = str(integer)
     count = (len(zahl))
-    sät = set()
+    sat = set()
 
     for x in range(count):
-        sät.add(zahl[x])
+        sat.add(zahl[x])
 
-    if len(sät) == count:
+    if len(sat) == count:
         unique = True
 
     print(zahl + " = hat {} Ziffern".format(count))
-    print(zahl + " = hat {} Einträge".format(len(sät)))
-    print(sät)
+    print(zahl + " = hat {} Einträge".format(len(sat)))
+    print(sat)
 
     return unique
 
@@ -124,9 +124,9 @@ def is_anagram (str1, str2):
 
 # Examples
 Game_1 = [
-  ["X", "O", "X"],   #[0,0][0,1][0,2]
-  ["O", "X",  "O"],
-  ["O", "X",  "X"]
+  ["X", "O", "X"],      # X, 0, 0
+  ["O", "X",  "O"],     # 0, X, X
+  ["O", "X",  "X"]      # X, 0, X
 ] # ➞ "X"
 
 Game_2 = [
@@ -145,11 +145,34 @@ Game_3 = [
 def Who_won (stuff):
     Winner = "Undecided"
 
-    print(Winner)
+    for t in matrix:
+        #print(t)
+
+        if t[0] == t[1] and t[0] == t[2]:
+            Winner = t[0]
+            print("Drei Gleiche!! yaaaay")
+        else:
+            print("kein Wiener")
+
+    for t in matrix_rotated:
+        #print(t)
+
+        if t[0] == t[1] and t[0] == t[2]:
+            Winner = t[0]
+            print("Drei Gleiche!! yaaaay")
+        else:
+            print("kein Wiener")
+
+    if (matrix[0][0] == matrix[1][1] and matrix[0][0] == matrix[2][2]) or \
+       (matrix[2][0] == matrix[1][1] and matrix[2][0] == matrix[0][2]):
+        Winner = matrix[1][1]
+        print("Drei Gleiche!! yaaaay")
+    else:
+        print("kein Wiener")
+
+    print("\nGesamtgewinner = "+ Winner + "\n")
 
 Who_won(Game_1)
-
-
-print(Game_1[1][2])
-
-
+Who_won(Game_2)
+Who_won(Game_3)
+Who_won(Game_4)
