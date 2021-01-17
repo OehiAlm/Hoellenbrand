@@ -83,10 +83,74 @@ def Binary_Search(a, x):
     else:
         return -1
 
-nums = [1, 2, 3, 4, 8, 8, 10, 12]
-x = 8
-num_position = Binary_Search(nums, x)
-if num_position == -1:
-    print(x, "is not present.")
-else:
-    print("First occurrence of", x, "is present at index", num_position)
+    unique = False
+    zahl = str(integer)
+    count = (len(zahl))
+    sät = set()
+
+    for x in range(count):
+        sät.add(zahl[x])
+
+    if len(sät) == count:
+        unique = True
+
+    print(zahl + " = hat {} Ziffern".format(count))
+    print(zahl + " = hat {} Einträge".format(len(sät)))
+    print(sät)
+
+    return unique
+
+    #print(Uniqueness_Check(48778584))
+    #print(Uniqueness_Check(17308459))
+
+
+def is_anagram (str1, str2):
+    Anagramme = [["Altersvorsorge", "sorgloser Vater"], ["Ablasshandel", "Hassballaden"],
+                 ["alternative Energien", "verratene Genitalien"], ["Tom", "Lukas"]]
+    sortiert1 = ''.join(sorted(str1.lower())).replace(" ","")
+    print(sortiert1)
+
+    sortiert2 = ''.join(sorted(str2.lower())).replace(" ","")
+    print(sortiert2)
+
+    if sortiert1 == sortiert2:
+        return True
+    else:
+        return False
+
+    #print(is_anagram(Anagramme[3][0],Anagramme[3][1]))
+
+# Given a 3x3 matrix of a completed tic-tac-toe game, create a function that returns whether the game is a win for "X", "O", or a "Draw",
+# where "X" and "O" represent themselves on the matrix, and "E" represents an empty spot.
+
+# Examples
+Game_1 = [
+  ["X", "O", "X"],   #[0,0][0,1][0,2]
+  ["O", "X",  "O"],
+  ["O", "X",  "X"]
+] # ➞ "X"
+
+Game_2 = [
+  ["O", "O", "O"],
+  ["O", "X", "X"],
+  ["E", "X", "X"]
+] # ➞ "O"
+
+Game_3 = [
+  ["X", "X", "O"],
+  ["O", "O", "X"],
+  ["X", "X", "O"]
+] # ➞ "Draw"
+
+
+def Who_won (stuff):
+    Winner = "Undecided"
+
+    print(Winner)
+
+Who_won(Game_1)
+
+
+print(Game_1[1][2])
+
+
