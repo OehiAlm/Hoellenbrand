@@ -72,16 +72,15 @@ def find(number, list):
     else:
         return "nono"
 
-print(find(9,[3,5,5,2,6]))
+    #print(find(9,[3,5,5,2,6]))
 
-
-from bisect import bisect_left
-def Binary_Search(a, x):
-    i = bisect_left(a, x)
-    if i != len(a) and a[i] == x:
-        return i
-    else:
-        return -1
+# Write a method that takes an unsigned integer as input and returns true if all the digits in the base
+# 10 representation of that number are unique.
+# bool AllDigitsUnique(unsigned int value)
+#Example:
+#AllDigitsUnique(48778584) returns false
+#AllDigitsUnique(17308459) returns true
+def Uniqueness_Check (integer):
 
     unique = False
     zahl = str(integer)
