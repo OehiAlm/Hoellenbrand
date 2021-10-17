@@ -10,6 +10,9 @@ def Textersteller (Name_des_Schenkers, Name_des_Beschenkten):
     f.write("Hallo "+Name_des_Schenkers+"! \nDu musst "+Name_des_Beschenkten+" beschenken.\nViel Spass!")
     f.close()
 
+if not os.path.isdir("../Everything/Wichteltexte/"):
+    os.mkdir("Wichteltexte")
+
 dir_name = "../Everything/Wichteltexte/"
 Textordner = os.listdir(dir_name)
 
