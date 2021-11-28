@@ -6,19 +6,20 @@ import timeit
 start = timeit.default_timer()
 
 Beyssells = ["Stefan", "Ute", "Lena", "Wiebke", "Caro"]
-Piepers = ["Joerg", "Elke", "Lukas", "Jana", "Tom"]
+Piepers = ["Joerg", "Elke", "Lukas", "Jana", "Tom", "Anna"]
 Sommers = ["Peter", "Katrin", "Scherin", "Christian", "Anne", "Alex"]
 
+Nachname_B = " Beyssell"
+Nachname_P = " Pieper"
+Nachname_S = " Sommer"
+Beyssells = [Vorname + Nachname_B for Vorname in Beyssells]
+Piepers = [Vorname + Nachname_P for Vorname in Piepers]
+Sommers = [Vorname + Nachname_S for Vorname in Sommers]
+
 Namen = Beyssells + Piepers + Sommers
+Kombinations_Counter = 0
 
-Beyssell_Ziele = Piepers.copy() + Sommers.copy()
-Pieper_Ziele = Beyssells.copy() + Sommers.copy()
-Sommer_Ziele = Beyssells.copy() + Piepers.copy()
-
-#print("Liste für Beyssells = "+ str(Beyssell_Ziele))
-#print("Liste für Piepers = "+ str(Pieper_Ziele))
-#print("Liste für Sommers = "+ str(Sommer_Ziele))
-
+#region Hier werden Ordner angelegt und Textdateien gebaut, etc.
 def Textersteller (Name_des_Schenkers, Name_des_Beschenkten):
     f = open("Wichteltexte_v2/"+Name_des_Schenkers+".txt", "w")
     f.write("Hallo "+Name_des_Schenkers+"! \nDu musst "+Name_des_Beschenkten+" beschenken."
@@ -36,35 +37,46 @@ for item in Textordner:
         os.remove(os.path.join(dir_name, item))
 
 # os.remove("Wichteltexte/")
+#endregion
 
 print("Dabei sind " + str(len(Namen)) + " Personen")
 
-Schenker = Beyssells.copy()
-Beschenkte = Piepers.copy() + Sommers.copy()
+Schenker = Namen.copy()
+Beschenkte = Namen.copy()
 
-print(Schenker)
-print(Beschenkte)
+#print(Schenker)
+#print(Beschenkte)
 
+# Voraussetzung, dass die Liste noch nicht leer ist, damit wir weiter machen
 while len(Schenker) >= 1:
     aktueller_Schenker = random.choice(Schenker)
     aktuell_Beschenkter = random.choice(Beschenkte)
 
-gleiche_Familie = aktueller_Schenker
-print(aktueller_Schenker[len(aktueller_Schenker)-1])
+    aktueller_Schenker_Nachname = aktueller_Schenker.partition(" ")[2]
+    aktueller_Beschenkter_Nachname = aktuell_Beschenkter.partition(" ")[2]
 
-while aktuell_Beschenkter == aktueller_Schenker:
+    #print("aktuell Beschenker Nachname = " + aktueller_Beschenkter_Nachname)
+    #print("Schenker Nachname = " + aktueller_Schenker_Nachname)
 
-        if len(Schenker) == 1:
-           print("Ich habe neu gemacht")
-           Schenker = Namen.copy()
-           Beschenkte = Namen.copy()
-
-
+    while aktueller_Beschenkter_Nachname == aktueller_Schenker_Nachname:
+        print(aktueller_Schenker + " darf nicht " + aktuell_Beschenkter + " beschenken! Neue Kombination wird gesucht")
         aktueller_Schenker = random.choice(Schenker)
         aktuell_Beschenkter = random.choice(Beschenkte)
-        print("Selbst beschenken gildet nicht!")
+        Kombinations_Counter = Kombinations_Counter + 1
+        aktueller_Schenker_Nachname = aktueller_Schenker.partition(" ")[2]
+        aktueller_Beschenkter_Nachname = aktuell_Beschenkter.partition(" ")[2]
 
-    #print(aktueller_Schenker + " beschenkt " + aktuell_Beschenkter)
+        if len(Schenker) == 1:
+            print("\n Wir müssen alles von vorne machen!!!! \n")
+            Schenker = Namen.copy()
+            Beschenkte = Namen.copy()
+
+    #print("habe zwei unterschiedliche Nachnamen gefunden")
+    print(aktueller_Schenker + " beschenkt " + aktuell_Beschenkter)
     Textersteller(aktueller_Schenker,aktuell_Beschenkter)
     Schenker.remove(aktueller_Schenker)
     Beschenkte.remove(aktuell_Beschenkter)
+
+stop = timeit.default_timer()
+print("Time: ", (stop - start)*1000, " Millisekunden hats gebraucht")
+print("Es hat ", Kombinations_Counter, "überflüssige Kombinationsversuche gebraucht")
