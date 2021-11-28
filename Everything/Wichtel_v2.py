@@ -1,6 +1,9 @@
 import random
 import os
+import timeit
+
 # Wichtelprogramm
+start = timeit.default_timer()
 
 Beyssells = ["Stefan", "Ute", "Lena", "Wiebke", "Caro"]
 Piepers = ["Joerg", "Elke", "Lukas", "Jana", "Tom"]
