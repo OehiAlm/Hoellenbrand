@@ -43,8 +43,23 @@ def run_game():
 
         # hier wird die Hintergrundfarbe reingeladen
         screen.fill(background_color)
+        # hier wird der divider gerendert
+        divider_Ypos = 0
+        while divider_Ypos <= screensizeY:
+            pygame.draw.rect(screen, ball_color, (divider_Xpos, divider_Ypos, divider_thicc, divider_length))
+            divider_Ypos = divider_Ypos + divider_length + divider_gap
+        # hier wird der Score gezeichnet
+        font = pygame.font.SysFont('consolas',100)
+        Score_p1 = font.render("{}".format(p1_score), True, ball_color)
+        Score_p2 = font.render("{}".format(p2_score), True, ball_color)
+        screen.blit(Score_p1, (screensizeX / 3 - 50, 50))
+        screen.blit(Score_p2, (screensizeX * 2 / 3, 50))
+        # hier wird Debug Gedöns gezeichnet
+        Debug_font = pygame.font.SysFont('consolas', 10)
+        Debug_Screen = Debug_font.render("current Ball Speed: {}".format(BallSpeed), True, ball_color)
+        screen.blit(Debug_Screen, (screensizeX - 150, screensizeY - 40))
         # hier wird der Ball gezeichnet
-        pygame.draw.circle(screen, ball_color, (512, 512), 10)
+        pygame.draw.circle(screen, ball_color, (ballX, ballY), ballRadius)
         # hier werden die Player-Rectangle gezeichnet
         pygame.draw.rect(screen, ball_color, (50, player_1_y, 10, 200))
         pygame.draw.rect(screen, ball_color, (1024-60, player_2_y, 10, 200))
