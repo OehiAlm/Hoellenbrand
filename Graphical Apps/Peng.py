@@ -2,17 +2,16 @@ import pygame
 import random
 import os
 import time
+from win32api import GetSystemMetrics
 
 def run_game():
-
-    #TODO for next time: Winkel für ankommende / abprallende Bälle
 
     # Hier wird die Clock Variable definiert und damit der Tick verfügbar gemacht
     clock = pygame.time.Clock()
     game_is_running = True
 
     # Position des Fensters auf dem aktuellen Bildschirm
-    os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (2560-1050, 1440-1400)
+    os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (0, 0)
 
     # wichtig für die DeltaTime
     prev_time = time.time()
@@ -20,8 +19,8 @@ def run_game():
 
     desired_fps = 120
 
-    screensizeX = 512
-    screensizeY = 1024
+    screensizeX = GetSystemMetrics(0)
+    screensizeY = GetSystemMetrics(1)
     p1_score = 0
     p2_score = 0
     p1_pedal_height = 200
