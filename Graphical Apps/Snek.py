@@ -1,5 +1,5 @@
 # -------------------------------------------------------------------------------------------------------------------- #
-#                                                       Import                                                        #
+#                                                       Import                                                         #
 # -------------------------------------------------------------------------------------------------------------------- #
 
 import pygame
@@ -104,14 +104,24 @@ def main():
     prev_time = time.time()
     dt = 0
 
+    tick_timer = 0
     desired_fps = 60
 
     pygame.display.set_caption("This is Snek")
     background_color = (0, 0, 0)
+
+    # Snek stuff
     snek_color = (255, 255, 255)
+    snek_thicc = 10
+    snek_direction_x = 0
+    snek_direction_y = 0
+    snek_position_x = ScreenSize.current_resolution_X / 2
+    snek_position_y = ScreenSize.current_resolution_Y / 2
+    snek = [(snek_position_x,snek_position_y),(snek_position_x + snek_thicc,snek_position_y),(snek_position_x+snek_thicc*2,snek_position_y)]
 
     # das ist, wie häufig die key-presses pro Sekunde abgefragt werden
-    pygame.key.set_repeat((int)(1000 / (desired_fps * 4)))
+    # pygame.key.set_repeat((int)(1000 / (desired_fps * 4)))
+
 
     # ---------------------------------------------------------------------------------------------------------------- #
     #                                                   Update                                                         #
@@ -129,7 +139,6 @@ def main():
         prev_time = now
         #print("\nprevious time was = {}".format(prev_time))
         current_time = pygame.time.get_ticks()
-        #print(current_time)
 
         # hier wird geguckt, ob das Quit-Event aufgerufen wurde (oder so)
         for event in pygame.event.get():
@@ -144,50 +153,54 @@ def main():
             if keys_pressed[pygame.K_ESCAPE]:
                 game_is_running = False
 
+            if keys_pressed[pygame.K_UP]:
+                snek_direction_x = 0
+                snek_direction_y = -snek_thicc
+            if keys_pressed[pygame.K_DOWN]:
+                snek_direction_x = 0
+                snek_direction_y = snek_thicc
+            if keys_pressed[pygame.K_LEFT]:
+                snek_direction_x = -snek_thicc
+                snek_direction_y = 0
+            if keys_pressed[pygame.K_RIGHT]:
+                snek_direction_x = snek_thicc
+                snek_direction_y = 0
+
             # hier gucken wir, welche Tasten gerade aufgehört wurden zu drücken. Hat den Vorteil, dass man nur 1 Event
             # reinbekommt, selbst wenn man die Taste vorher 3 Sekunden lang gedrückt hat.
             if event.type == pygame.KEYUP:
 
                 # Ich hab mir die Taste F für das Fullscreen togglen ausgesucht.
                 if event.key == pygame.K_f:
-
                 # Also rufen wir die selbstgeschriebene Toggle Funktion auf und geben ihr unseren Container
                 # mit den ganzen Daten zur aktuellen Größe, maximalen Größe, etc. mit
                     ToggleFullscreen(ScreenSize)
 
-            # if event.type == pygame.KEYUP:
-            #    if event.key == pygame.K_0:
-            #        print(ScreenSize.current_resolution_X + ScreenSize.current_resolution_Y)
-            # if keys_pressed[pygame.K_UP]:
-            #     if p1_y >= 5:
-            #         p1_y = p1_y - 1 * dt * desired_fps
-            # if keys_pressed[pygame.K_DOWN]:
-            #     if p1_y <= screensizeY - p1_pedal_height - 5:
-            #         p1_y = p1_y + 1 * dt * desired_fps
-            # if keys_pressed[pygame.K_w]:
-            #     if p2_y >= 5:
-            #         p2_y = p2_y - 1 * dt * desired_fps
-            # if keys_pressed[pygame.K_s]:
-            #     if p2_y <= screensizeY - p2_pedal_height - 5:
-            #         p2_y = p2_y + 1 * dt * desired_fps
+        # sorgt dafür, dass nur 1x pro Sekunde!! die Position unserer Snek wirklich upgedatet wird
+        tick_timer = tick_timer + dt
+        if tick_timer >= 1:
+            tick_timer = 0
+            snek_position_x = snek_position_x + snek_direction_x
+            snek_position_y = snek_position_y + snek_direction_y
+
+            # Auf Basis der neuen Position wird ein neuer Kopf gebaut und der Schwanz gelöscht.
+            # Das machen wir deshalb, weil alle "Mittelteile" eigentlich an ihrer Position bleiben.
+            snek.insert(0,(snek_position_x,snek_position_y))
+            snek.pop(snek.__len__() - 1)
+
+        # ---------------------------------------------------------------------------------------------------------------- #
+    #                                                     Draw                                                         #
+    # ---------------------------------------------------------------------------------------------------------------- #
 
         # Aktualisierung der Auflösung (falls zwischenzeitlich geändert)
         screen = pygame.display.set_mode((ScreenSize.current_resolution_X, ScreenSize.current_resolution_Y))
 
-    # ---------------------------------------------------------------------------------------------------------------- #
-    #                                                     Draw                                                         #
-    # ---------------------------------------------------------------------------------------------------------------- #
-
         # hier wird die Hintergrundfarbe reingeladen
         screen.fill(background_color)
 
-        # selbst gebaute Funktion, die an dieser Stelle eigentlich ziemlich quatschig ist. Können wir noch woandershin
-        # schieben damit hier hinterher nur noch ...
-        def draw_snek(screen, snek_color, ScreenSize):
-            pygame.draw.rect(screen, snek_color, (ScreenSize.current_resolution_X / 2, ScreenSize.current_resolution_Y / 2, 10, 10))
-
-        # ...das hier steht
-        draw_snek(screen, snek_color, ScreenSize)
+        # Wir zeichnen alle Körperteile in der Liste
+        for pos in snek:
+            pygame.draw.rect(screen, snek_color, (pos[0], pos[1], snek_thicc, snek_thicc))
 
         # hier wird das Display refreshed
         pygame.display.flip()
