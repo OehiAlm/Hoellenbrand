@@ -78,6 +78,12 @@ def ToggleFullscreen(ScreenSize):
         #print("Disabled Fullscreen")
         #print(ScreenSize)
 
+def Update_snek_speed(snek_speed):
+    result = (snek_speed * snek_speed) / (snek_speed * 0.8)
+    if result > 50:
+        result = 50
+    return result
+
 # Hier definieren wir unsere Haupt-Funktion, in der sich im Prinzip alles abspielen wird.
 def main():
 
@@ -103,11 +109,17 @@ def main():
 
     #print("Initiating ScreenSize Dimensions \n" + str(ScreenSize))
 
+    # Game Score
+    Score_Color = (16,16,16)
+    Score = 0
+
     # Hier wird unser Font Gedöns initialisiert
     pygame.font.init()
     #print(pygame.font.get_fonts())
     Game_over_Font = pygame.font.SysFont("comicsansms",size=24, bold=True)
+    Score_Font = pygame.font.SysFont("AmericanTypewriter", size=480, bold=True)
     Game_over_Surface = Game_over_Font.render("Game Over du Arsch - press R to restart",True,(0,255,0))
+    Score_Surface = Score_Font.render(str(Score), True, Score_Color)
 
     # Hier wird das Software Display initiiert und die Größe direkt mit unserer Standard-Auflösung versetzt
     pygame.display.init()
@@ -124,26 +136,40 @@ def main():
     background_color = (0, 0, 0)
 
     # Snek stuff
+    #initial_snek_length = 7
+    initial_snek_speed = 10     # Wie viele Movements pro Sekunde die Schlange macht
     white = (255, 255, 255)
-    snek_thicc = 10
+    snek_thicc = 20
     snek_direction_x = snek_thicc   #brauchen wir, damit sie anfangs nach rechts los läuft
     snek_direction_y = 0
-    snek_position_x = ScreenSize.current_resolution_X / 2
-    snek_position_y = ScreenSize.current_resolution_Y / 2
-    snek = [(snek_position_x, snek_position_y), (snek_position_x - snek_thicc, snek_position_y), (snek_position_x - snek_thicc * 2, snek_position_y)]
+    snek_head_position_x = ScreenSize.current_resolution_X / 2
+    snek_head_position_y = ScreenSize.current_resolution_Y / 2
+    snek_speed = initial_snek_speed
+
+    # Food stuff
+    food_thicc = snek_thicc
+
+    # Snek construction
+    #counter = 0
+    #snek = [(float,float)]
+    #for bodyparts in range (initial_snek_length):
+    #    counter = counter + 1
+    #    snek = snek.insert((snek_head_position_x - snek_thicc * counter, snek_head_position_y))
+    snek = [(snek_head_position_x, snek_head_position_y), (snek_head_position_x - snek_thicc, snek_head_position_y), (snek_head_position_x - snek_thicc * 2, snek_head_position_y)]
 
     # Snek Food
+    # TODO: Food kann manchmal außerhalb unserer Begrenzung spawnen. Das ist schlecht. Grad kein Bock das zu machen.
     def Spawn_food():
-        food_position_x = random.randint(border_distance, ScreenSize.current_resolution_X - border_distance).__round__(-1)
-        food_position_y = random.randint(border_distance, ScreenSize.current_resolution_Y - border_distance).__round__(-1)
+        food_position_x = random.randint(border_distance, ScreenSize.current_resolution_X - border_distance * 2).__round__(-1 * int(food_thicc/10))
+        food_position_y = random.randint(border_distance, ScreenSize.current_resolution_Y - border_distance * 2).__round__(-1 * int(food_thicc/10))
         return food_position_x, food_position_y
 
     food_position_x, food_position_y = Spawn_food()
 
     # das ist, wie häufig die key-presses pro Sekunde abgefragt werden
     # pygame.key.set_repeat((int)(1000 / (desired_fps * 4)))
-
     last_key_pressed = 4    #da snek nach rechts startet muss input nach links disabled werden
+    new_direction_selected = False
     red = (255, 0, 0)
 
     # ---------------------------------------------------------------------------------------------------------------- #
@@ -176,22 +202,30 @@ def main():
             if keys_pressed[pygame.K_ESCAPE]:
                 game_is_running = False
 
-            if keys_pressed[pygame.K_UP] and last_key_pressed != 2:
-                last_key_pressed = 1
-                snek_direction_x = 0
-                snek_direction_y = -snek_thicc
-            if keys_pressed[pygame.K_DOWN] and last_key_pressed != 1:
-                last_key_pressed = 2
-                snek_direction_x = 0
-                snek_direction_y = snek_thicc
-            if keys_pressed[pygame.K_LEFT] and last_key_pressed != 4:
-                last_key_pressed = 3
-                snek_direction_x = -snek_thicc
-                snek_direction_y = 0
-            if keys_pressed[pygame.K_RIGHT] and last_key_pressed != 3:
-                last_key_pressed = 4
-                snek_direction_x = snek_thicc
-                snek_direction_y = 0
+            if new_direction_selected is False:
+                if keys_pressed[pygame.K_UP] and last_key_pressed != 2:
+                    last_key_pressed = 1
+                    snek_direction_x = 0
+                    snek_direction_y = -snek_thicc
+                    new_direction_selected = True
+                    break
+                if keys_pressed[pygame.K_DOWN] and last_key_pressed != 1:
+                    last_key_pressed = 2
+                    snek_direction_x = 0
+                    snek_direction_y = snek_thicc
+                    new_direction_selected = True
+                    break
+                if keys_pressed[pygame.K_LEFT] and last_key_pressed != 4:
+                    last_key_pressed = 3
+                    snek_direction_x = -snek_thicc
+                    snek_direction_y = 0
+                    new_direction_selected = True
+                    break
+                if keys_pressed[pygame.K_RIGHT] and last_key_pressed != 3:
+                    last_key_pressed = 4
+                    snek_direction_x = snek_thicc
+                    snek_direction_y = 0
+                    new_direction_selected = True
 
             # hier gucken wir, welche Tasten gerade aufgehört wurden zu drücken. Hat den Vorteil, dass man nur 1 Event
             # reinbekommt, selbst wenn man die Taste vorher 3 Sekunden lang gedrückt hat.
@@ -205,43 +239,68 @@ def main():
 
                 if event.key == pygame.K_r:
                     # hier restarten wir
-                    snek_position_x = ScreenSize.current_resolution_X / 2
-                    snek_position_y = ScreenSize.current_resolution_Y / 2
-                    snek = [(snek_position_x, snek_position_y), (snek_position_x - snek_thicc, snek_position_y),
-                            (snek_position_x - snek_thicc * 2, snek_position_y)]
+                    snek_head_position_x = ScreenSize.current_resolution_X / 2
+                    snek_head_position_y = ScreenSize.current_resolution_Y / 2
+                    snek = [(snek_head_position_x, snek_head_position_y), (snek_head_position_x - snek_thicc, snek_head_position_y),
+                            (snek_head_position_x - snek_thicc * 2, snek_head_position_y)]
                     snek_direction_x = snek_thicc  # wir laufen wieder nach rechts los
                     last_key_pressed = 4  # wir blockieren wieder, dass man nicht nach links laufen kann
                     snek_direction_y = 0
+                    snek_speed = initial_snek_speed
                     game_over = False
+                    Score = 0
+                    Score_Surface = Score_Font.render(str(Score), True, Score_Color)
+
 
         if game_over == False:
-            # sorgt dafür, dass nur 1x pro Sekunde!! die Position unserer Snek wirklich upgedatet wird
             tick_timer = tick_timer + dt
-            if tick_timer >= 0.1:   # wie schnell unsere snek ist
+            # sorgt dafür, dass erst nach einer bestimmten Anzahl von Ticks die Position unserer Snek upgedatet wird
+            if tick_timer >= 1 / snek_speed:   # unsere Snek-Geschwindigkeit definiert, wie häufig wir Kollision und ähnliches updaten
+                new_direction_selected = False  # nur ein input alle paar Ticks wird akzeptiert, weitere werden ignoriert
                 tick_timer = 0
+
+                # hier wird die neue Position (für den Kopf) ausgerechnet
+                snek_head_position_x = snek_head_position_x + snek_direction_x
+                snek_head_position_y = snek_head_position_y + snek_direction_y
+
+                # Auf Basis der neuen Position wird ein neuer Kopf gebaut und der Schwanz gelöscht.
+                # Das machen wir deshalb, weil alle "Mittelteile" eigentlich an ihrer Position bleiben.
+                snek.insert(0, (snek_head_position_x, snek_head_position_y))
+                snek.pop(snek.__len__() - 1)
+
+
+                # ----------------- Collision Stuff ----------------- #
+
                 # wenn snek auf essen trifft, dann passiert das
-                if snek_position_x == food_position_x and snek_position_y == food_position_y:
+                if snek_head_position_x == food_position_x and snek_head_position_y == food_position_y:
+                    # Score wird um eins erhöht & das dazugehörige Draw-Element geupdatet
+                    Score = Score + 1
+                    Score_Surface = Score_Font.render(str(Score), True, Score_Color)
+                    # snek wird schneller
+                    snek_speed = Update_snek_speed(snek_speed)
+                    print("snek speed currently at: "+str(snek_speed))
                     # snek wird länger
-                    snek.insert(snek.__len__(), (snek_position_x, snek_position_y))
+                    snek.insert(snek.__len__(), (snek_head_position_x, snek_head_position_y))
                     # food wird neu platziert
                     food_position_x, food_position_y = Spawn_food()
 
-                # guckt, ob die snek innerhalb unserer "Arena" ist. Wenn sie an die Kante kommt, kollidiert sie nicht
-                # mehr mit unserem BorderRect und dann ist game over
-                if BorderRect.collidepoint(snek_position_x + snek_direction_x, snek_position_y + snek_direction_y):
-                    snek_position_x = snek_position_x + snek_direction_x
-                    snek_position_y = snek_position_y + snek_direction_y
+                # guckt, ob die snek innerhalb unserer "Arena" ist, bzw. im nächsten Tick sein wird.
+                # Wenn sie an die Kante kommt, kollidiert sie nicht mehr mit unserem BorderRect und dann ist game over
+                if BorderRect.collidepoint(snek_head_position_x + snek_direction_x, snek_head_position_y + snek_direction_y):
 
-                    # Auf Basis der neuen Position wird ein neuer Kopf gebaut und der Schwanz gelöscht.
-                    # Das machen wir deshalb, weil alle "Mittelteile" eigentlich an ihrer Position bleiben.
-                    snek.insert(0, (snek_position_x, snek_position_y))
-                    snek.pop(snek.__len__() - 1)
+                    # guckt, ob irgendein bodypart mit dem Kopf kollidiert
+                    snek_head = snek[0]
+                    snek_tail = snek[snek.__len__()-1]
+                    for bodypart in snek:
+                        if bodypart is not snek_head and bodypart is not snek_tail:
+                            if snek[0] == bodypart:
+                                game_over = True
+                                break
                 else:
                     game_over = True
 
-                #TODO: fixen, dass man sich nicht super schnell  um 180° (oder mehr) innerhalb eines Ticks drehen kann
-                #TODO: fixen, dass die snek mit sich selbst kollidieren kann
                 #TODO: fixen, dass der Fullscreen Modus alles richtig mit-skaliert
+                #TODO: Skalierung vom Score. Der sieht noch nicht so richtig geil aus
 
     # ---------------------------------------------------------------------------------------------------------------- #
     #                                                     Draw                                                         #
@@ -253,12 +312,15 @@ def main():
         # hier wird die Hintergrundfarbe reingeladen
         screen.fill(background_color)
 
+        # hier wird der Score in den Hintergrund gezeichnet
+        screen.blit(Score_Surface, (40, 40))
+
         # Wir zeichnen alle Körperteile in der Liste
         for pos in snek:
             pygame.draw.rect(screen, white, (pos[0], pos[1], snek_thicc, snek_thicc))
 
         # Food Draw
-        pygame.draw.rect(screen, white, (food_position_x, food_position_y, 10, 10), width=1)
+        pygame.draw.rect(screen, white, (food_position_x, food_position_y, food_thicc, food_thicc), width=1)
 
         # Border Draw
         #test = pygame.draw.polygon(screen, red, BorderVertices, 4)
@@ -268,6 +330,7 @@ def main():
         # Game Over Screen
         if game_over == True:
             screen.blit(Game_over_Surface, (100, 100))
+            Score_Surface = Score_Font.render(str(Score), True, (200, 155, 12))
 
         # hier wird das Display refreshed
         pygame.display.flip()
