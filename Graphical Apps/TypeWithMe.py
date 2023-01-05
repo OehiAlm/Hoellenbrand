@@ -1,12 +1,15 @@
 import random
 import os
 import timeit
+import pygame
+import bs4
+import requests
 
 #TypeWithMe
 
 #Features
 # - Language selection (Deutsch / English)
-# - Pull sentences from webpage database based on selection
+# - Pull sentence from webpage database based on selection
 # - Define 'difficulty' of sentence by analysing length & complexity
 # - Countdown until typing input is accepted so player can get ready
 # - Time and analyze typing
