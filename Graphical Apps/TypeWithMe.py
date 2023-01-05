@@ -16,3 +16,25 @@ import timeit
 # - When sentence is done show results by calculating a grade
 # - Retry or New sentence/language
 
+
+webpage = requests.get('https://www.randomsentencegen.com/')
+soup = bs4.BeautifulSoup(webpage.text, features="lxml") #print(soup)
+sentence = soup.find("p", class_="text-center sen-ex").get_text()
+#print(sentence)
+
+game_is_running = True
+
+while game_is_running:
+    pygame.display.init()
+    screen = pygame.display.set_mode((800, 600))
+    pygame.display.update()
+
+    keys_pressed = pygame.key.get_pressed()
+    if keys_pressed[pygame.K_ESCAPE]:
+        game_is_running = False
+
+#TODO:
+# 1. Satz in einem Fenster darstellen
+# 2. User Input akzeptieren und auch darstellen
+# 3. User Input und angezeigten Satz vergleichen
+# 4. tbd
